@@ -9,11 +9,12 @@ namespace JorisHoef.PackageInstaller.Editor
         public PackageDefinition(
             string displayName,
             string packageId,
-            string packageReference,
+            string stableUrl,
             string description,
             IEnumerable<string> dependencies = null,
             IEnumerable<string> scriptingDefineSymbols = null,
             bool isIntegration = false,
+            string developmentUrl = null,
             string displayVersion = null)
         {
             if (string.IsNullOrWhiteSpace(displayName))
@@ -28,7 +29,8 @@ namespace JorisHoef.PackageInstaller.Editor
 
             DisplayName = displayName;
             PackageId = packageId;
-            PackageReference = packageReference ?? string.Empty;
+            StableUrl = stableUrl ?? string.Empty;
+            DevelopmentUrl = developmentUrl ?? string.Empty;
             Description = description ?? string.Empty;
             Dependencies = ToReadOnlyList(dependencies);
             ScriptingDefineSymbols = ToReadOnlyList(scriptingDefineSymbols);
@@ -40,7 +42,11 @@ namespace JorisHoef.PackageInstaller.Editor
 
         public string PackageId { get; }
 
-        public string PackageReference { get; }
+        public string StableUrl { get; }
+
+        public string DevelopmentUrl { get; }
+
+        public string PackageReference => GetUrl(PackageChannel.Stable);
 
         public string Description { get; }
 
@@ -52,9 +58,19 @@ namespace JorisHoef.PackageInstaller.Editor
 
         public bool IsIntegration { get; }
 
-        public bool HasPackageReference => !string.IsNullOrWhiteSpace(PackageReference);
+        public bool HasPackageReference => !string.IsNullOrWhiteSpace(GetUrl(PackageChannel.Stable));
 
         public bool HasDisplayVersion => !string.IsNullOrWhiteSpace(DisplayVersion);
+
+        public string GetUrl(PackageChannel channel)
+        {
+            if (channel == PackageChannel.Development && !string.IsNullOrWhiteSpace(DevelopmentUrl))
+            {
+                return DevelopmentUrl;
+            }
+
+            return StableUrl;
+        }
 
         private static IReadOnlyList<string> ToReadOnlyList(IEnumerable<string> values)
         {

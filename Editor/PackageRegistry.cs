@@ -28,6 +28,7 @@ namespace JorisHoef.PackageInstaller.Editor
                 GenericUIItemsPackageId,
                 "https://github.com/JorisHoef/GenericUIItems.git#develop",
                 "Lightweight UGUI collection-to-item presentation helpers.",
+                developmentUrl: "https://github.com/JorisHoef/GenericUIItems.git#develop",
                 displayVersion: "1.0.0"),
 
             new PackageDefinition(
@@ -35,6 +36,7 @@ namespace JorisHoef.PackageInstaller.Editor
                 APIHelperPackageId,
                 "https://github.com/JorisHoef/API-Helper.git#main",
                 "Reusable API client package for JSON, text, bytes, textures, and endpoint workflows.",
+                developmentUrl: "https://github.com/JorisHoef/API-Helper.git#develop",
                 displayVersion: "1.0.0"),
 
             new PackageDefinition(
@@ -42,6 +44,7 @@ namespace JorisHoef.PackageInstaller.Editor
                 SessionHelperPackageId,
                 "https://github.com/JorisHoef/Session-Helper.git#master",
                 "Standalone authenticated-session lifecycle helpers with storage, restore, refresh, and change notifications.",
+                developmentUrl: "https://github.com/JorisHoef/Session-Helper.git#develop",
                 displayVersion: "0.1.0")
         };
 

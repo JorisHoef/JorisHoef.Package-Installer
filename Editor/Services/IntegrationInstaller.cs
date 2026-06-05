@@ -35,6 +35,11 @@ namespace JorisHoef.PackageInstaller.Editor
 
         public void InstallPackage(PackageDefinition packageDefinition)
         {
+            InstallPackage(packageDefinition, PackageChannel.Stable);
+        }
+
+        public void InstallPackage(PackageDefinition packageDefinition, PackageChannel channel)
+        {
             if (packageDefinition == null)
             {
                 return;
@@ -52,10 +57,15 @@ namespace JorisHoef.PackageInstaller.Editor
                 return;
             }
 
-            _packageInstallService.Install(packageDefinition);
+            _packageInstallService.Install(packageDefinition, channel);
         }
 
         public void InstallIntegration(PackageDefinition integrationDefinition)
+        {
+            InstallIntegration(integrationDefinition, null);
+        }
+
+        public void InstallIntegration(PackageDefinition integrationDefinition, Func<PackageDefinition, PackageChannel> channelSelector)
         {
             if (integrationDefinition == null)
             {
@@ -79,7 +89,7 @@ namespace JorisHoef.PackageInstaller.Editor
                 return;
             }
 
-            _packageInstallService.InstallMany(missingDependencies);
+            _packageInstallService.InstallMany(missingDependencies, channelSelector);
 
             if (!_packageInstallService.IsBusy)
             {
@@ -91,6 +101,11 @@ namespace JorisHoef.PackageInstaller.Editor
         }
 
         public void InstallAll()
+        {
+            InstallAll(null);
+        }
+
+        public void InstallAll(Func<PackageDefinition, PackageChannel> channelSelector)
         {
             PackageDefinition[] missingPackages = PackageRegistry.StandalonePackages
                 .Where(package => !_packageDetectionService.IsInstalled(package.PackageId))
@@ -127,7 +142,7 @@ namespace JorisHoef.PackageInstaller.Editor
                 }
             }
 
-            _packageInstallService.InstallMany(missingPackages);
+            _packageInstallService.InstallMany(missingPackages, channelSelector);
 
             if (!_packageInstallService.IsBusy)
             {

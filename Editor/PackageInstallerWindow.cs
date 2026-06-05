@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -15,6 +16,8 @@ namespace JorisHoef.PackageInstaller.Editor
         private PackageDetectionService _packageDetectionService;
         private ScriptingDefineService _scriptingDefineService;
         private IntegrationInstaller _integrationInstaller;
+        private readonly Dictionary<string, PackageChannel> _selectedChannels =
+            new Dictionary<string, PackageChannel>();
 
         private Vector2 _scrollPosition;
 
@@ -158,7 +161,7 @@ namespace JorisHoef.PackageInstaller.Editor
                 {
                     if (GUILayout.Button("Install All", EditorStyles.toolbarButton, GUILayout.Width(110f)))
                     {
-                        _integrationInstaller.InstallAll();
+                        _integrationInstaller.InstallAll(GetSelectedChannel);
                     }
                 }
             }
@@ -172,13 +175,15 @@ namespace JorisHoef.PackageInstaller.Editor
                 {
                     EditorGUILayout.LabelField(packageDefinition.DisplayName, EditorStyles.boldLabel);
                     GUILayout.FlexibleSpace();
+                    DrawChannelPopup(packageDefinition);
+                    GUILayout.Space(8f);
                     DrawPackageStatus(packageDefinition);
                 }
 
                 EditorGUILayout.LabelField(packageDefinition.Description, EditorStyles.wordWrappedLabel);
                 DrawDisplayVersion(packageDefinition);
                 DrawSelectableValue("Package ID", packageDefinition.PackageId);
-                DrawSelectableValue("Reference", packageDefinition.PackageReference);
+                DrawSelectableValue("Reference", packageDefinition.GetUrl(GetSelectedChannel(packageDefinition)));
 
                 using (new EditorGUILayout.HorizontalScope())
                 {
@@ -191,7 +196,7 @@ namespace JorisHoef.PackageInstaller.Editor
                     {
                         if (GUILayout.Button(installed ? "Installed" : "Install", GUILayout.Width(100f)))
                         {
-                            _integrationInstaller.InstallPackage(packageDefinition);
+                            _integrationInstaller.InstallPackage(packageDefinition, GetSelectedChannel(packageDefinition));
                         }
                     }
                 }
@@ -228,7 +233,7 @@ namespace JorisHoef.PackageInstaller.Editor
 
                         if (GUILayout.Button(buttonLabel, GUILayout.Width(140f)))
                         {
-                            _integrationInstaller.InstallIntegration(packageDefinition);
+                            _integrationInstaller.InstallIntegration(packageDefinition, GetSelectedChannel);
                         }
                     }
                 }
@@ -292,6 +297,34 @@ namespace JorisHoef.PackageInstaller.Editor
             }
 
             DrawSelectableValue("Version", packageDefinition.DisplayVersion);
+        }
+
+        private void DrawChannelPopup(PackageDefinition packageDefinition)
+        {
+            PackageChannel selectedChannel = GetSelectedChannel(packageDefinition);
+            PackageChannel nextChannel = (PackageChannel)EditorGUILayout.EnumPopup(
+                selectedChannel,
+                GUILayout.Width(115f));
+
+            if (nextChannel != selectedChannel)
+            {
+                _selectedChannels[packageDefinition.PackageId] = nextChannel;
+            }
+        }
+
+        private PackageChannel GetSelectedChannel(PackageDefinition packageDefinition)
+        {
+            if (packageDefinition == null)
+            {
+                return PackageChannel.Stable;
+            }
+
+            if (_selectedChannels.TryGetValue(packageDefinition.PackageId, out PackageChannel selectedChannel))
+            {
+                return selectedChannel;
+            }
+
+            return PackageChannel.Stable;
         }
 
         private static void DrawStatusLabel(string label, MessageType messageType)

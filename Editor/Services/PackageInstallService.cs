@@ -17,11 +17,11 @@ namespace JorisHoef.PackageInstaller.Editor
     {
         private const string LogPrefix = "[JorisHoef Package Installer]";
 
-        private readonly Queue<PackageDefinition> _installQueue = new Queue<PackageDefinition>();
+        private readonly Queue<QueuedPackageInstall> _installQueue = new Queue<QueuedPackageInstall>();
         private readonly HashSet<string> _queuedOrInstallingPackageIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
         private AddRequest _currentRequest;
-        private PackageDefinition _currentPackage;
+        private QueuedPackageInstall _currentInstall;
 
         public event Action StateChanged;
 
@@ -31,11 +31,20 @@ namespace JorisHoef.PackageInstaller.Editor
 
         public PackageInstallRequestState State { get; private set; } = PackageInstallRequestState.Idle;
 
-        public PackageDefinition CurrentPackage => _currentPackage;
+        public PackageDefinition CurrentPackage => _currentInstall != null ? _currentInstall.PackageDefinition : null;
+
+        public PackageChannel CurrentChannel => _currentInstall != null ? _currentInstall.Channel : PackageChannel.Stable;
+
+        public string CurrentUrl => _currentInstall != null ? _currentInstall.Url : string.Empty;
 
         public bool IsBusy => State == PackageInstallRequestState.Installing || _installQueue.Count > 0;
 
         public bool Install(PackageDefinition packageDefinition)
+        {
+            return Install(packageDefinition, PackageChannel.Stable);
+        }
+
+        public bool Install(PackageDefinition packageDefinition, PackageChannel channel)
         {
             if (packageDefinition == null)
             {
@@ -43,9 +52,11 @@ namespace JorisHoef.PackageInstaller.Editor
                 return false;
             }
 
-            if (!packageDefinition.HasPackageReference)
+            string packageUrl = packageDefinition.GetUrl(channel);
+
+            if (string.IsNullOrWhiteSpace(packageUrl))
             {
-                Debug.LogWarning(LogPrefix + " " + packageDefinition.DisplayName + " has no package reference to install.");
+                Debug.LogWarning(LogPrefix + " " + packageDefinition.DisplayName + " has no package URL to install.");
                 return false;
             }
 
@@ -55,9 +66,9 @@ namespace JorisHoef.PackageInstaller.Editor
                 return false;
             }
 
-            _installQueue.Enqueue(packageDefinition);
+            _installQueue.Enqueue(new QueuedPackageInstall(packageDefinition, channel, packageUrl));
             _queuedOrInstallingPackageIds.Add(packageDefinition.PackageId);
-            Debug.Log(LogPrefix + " Queued " + packageDefinition.DisplayName + " from " + packageDefinition.PackageReference + ".");
+            Debug.Log(LogPrefix + " Queued " + packageDefinition.DisplayName + " from " + packageUrl + " (" + channel + ").");
 
             StartNextRequestIfNeeded();
             NotifyStateChanged();
@@ -67,6 +78,16 @@ namespace JorisHoef.PackageInstaller.Editor
 
         public void InstallMany(IEnumerable<PackageDefinition> packageDefinitions)
         {
+            InstallMany(packageDefinitions, PackageChannel.Stable);
+        }
+
+        public void InstallMany(IEnumerable<PackageDefinition> packageDefinitions, PackageChannel channel)
+        {
+            InstallMany(packageDefinitions, _ => channel);
+        }
+
+        public void InstallMany(IEnumerable<PackageDefinition> packageDefinitions, Func<PackageDefinition, PackageChannel> channelSelector)
+        {
             if (packageDefinitions == null)
             {
                 return;
@@ -74,7 +95,8 @@ namespace JorisHoef.PackageInstaller.Editor
 
             foreach (PackageDefinition packageDefinition in packageDefinitions)
             {
-                Install(packageDefinition);
+                PackageChannel channel = channelSelector != null ? channelSelector(packageDefinition) : PackageChannel.Stable;
+                Install(packageDefinition, channel);
             }
         }
 
@@ -95,20 +117,20 @@ namespace JorisHoef.PackageInstaller.Editor
                 return;
             }
 
-            _currentPackage = _installQueue.Dequeue();
+            _currentInstall = _installQueue.Dequeue();
             State = PackageInstallRequestState.Installing;
 
             try
             {
-                _currentRequest = Client.Add(_currentPackage.PackageReference);
+                _currentRequest = Client.Add(_currentInstall.Url);
                 EditorApplication.update -= Update;
                 EditorApplication.update += Update;
 
-                Debug.Log(LogPrefix + " Installing " + _currentPackage.DisplayName + " using " + _currentPackage.PackageReference + ".");
+                Debug.Log(LogPrefix + " Installing " + _currentInstall.PackageDefinition.DisplayName + " using " + _currentInstall.Url + " (" + _currentInstall.Channel + ").");
             }
             catch (Exception exception)
             {
-                Debug.LogError(LogPrefix + " Failed to start install for " + _currentPackage.DisplayName + ": " + exception.Message);
+                Debug.LogError(LogPrefix + " Failed to start install for " + _currentInstall.PackageDefinition.DisplayName + ": " + exception.Message);
                 CompleteCurrentRequest(false, exception.Message);
             }
         }
@@ -122,9 +144,10 @@ namespace JorisHoef.PackageInstaller.Editor
 
             if (_currentRequest.Status == StatusCode.Success)
             {
-                string packageName = _currentRequest.Result != null ? _currentRequest.Result.name : _currentPackage.PackageId;
+                PackageDefinition packageDefinition = _currentInstall.PackageDefinition;
+                string packageName = _currentRequest.Result != null ? _currentRequest.Result.name : packageDefinition.PackageId;
                 string version = _currentRequest.Result != null ? _currentRequest.Result.version : "unknown";
-                string message = "Installed " + _currentPackage.DisplayName + " (" + packageName + "@" + version + ").";
+                string message = "Installed " + packageDefinition.DisplayName + " (" + packageName + "@" + version + ") from " + _currentInstall.Channel + ".";
 
                 Debug.Log(LogPrefix + " " + message);
                 CompleteCurrentRequest(true, message);
@@ -135,13 +158,13 @@ namespace JorisHoef.PackageInstaller.Editor
                 ? _currentRequest.Error.message
                 : "Package Manager returned an unknown error.";
 
-            Debug.LogError(LogPrefix + " Failed to install " + _currentPackage.DisplayName + ": " + errorMessage);
+            Debug.LogError(LogPrefix + " Failed to install " + _currentInstall.PackageDefinition.DisplayName + ": " + errorMessage);
             CompleteCurrentRequest(false, errorMessage);
         }
 
         private void CompleteCurrentRequest(bool success, string message)
         {
-            PackageDefinition completedPackage = _currentPackage;
+            PackageDefinition completedPackage = _currentInstall != null ? _currentInstall.PackageDefinition : null;
 
             if (completedPackage != null)
             {
@@ -149,7 +172,7 @@ namespace JorisHoef.PackageInstaller.Editor
             }
 
             _currentRequest = null;
-            _currentPackage = null;
+            _currentInstall = null;
             State = PackageInstallRequestState.Idle;
 
             InstallCompleted?.Invoke(completedPackage, success, message);
@@ -167,6 +190,22 @@ namespace JorisHoef.PackageInstaller.Editor
         private void NotifyStateChanged()
         {
             StateChanged?.Invoke();
+        }
+
+        private sealed class QueuedPackageInstall
+        {
+            public QueuedPackageInstall(PackageDefinition packageDefinition, PackageChannel channel, string url)
+            {
+                PackageDefinition = packageDefinition;
+                Channel = channel;
+                Url = url;
+            }
+
+            public PackageDefinition PackageDefinition { get; }
+
+            public PackageChannel Channel { get; }
+
+            public string Url { get; }
         }
     }
 }
