@@ -52,12 +52,24 @@ Each `PackageDefinition` contains:
 
 - `displayName`: the name shown in the installer window.
 - `packageId`: the Unity package name, such as `com.jorishoef.api-helper`.
-- `packageReference`: the Git URL or UPM identifier passed to `UnityEditor.PackageManager.Client.Add`.
+- `stableUrl`: the stable Git URL or UPM identifier passed to `UnityEditor.PackageManager.Client.Add`.
+- `developmentUrl`: optional development-channel Git URL or UPM identifier. If this is empty, Development falls back to Stable.
 - `description`: the explanatory text shown in the UI.
+- `displayVersion`: optional human-readable version text shown in the UI.
 - `dependencies`: package IDs that should be installed before an integration is enabled.
 - `scriptingDefineSymbols`: optional symbols added to the selected build target group.
 
-For regular packages, set `packageReference` to the UPM identifier or Git URL. For integration entries that only compose other packages, leave `packageReference` empty and list the required packages in `dependencies`.
+For regular packages, set `stableUrl` and, when available, `developmentUrl` to the UPM identifier or Git URL. For integration entries that only compose other packages, leave the URL fields empty and list the required packages in `dependencies`.
+
+## Update Checks
+
+`Check for Updates` compares installed registry packages against the selected Stable or Development channel. Git packages are compared by installed revision and the latest revision returned by `git ls-remote`.
+
+Unknown revisions, missing Git, network failures, local/file packages, and non-Git UPM identifiers are reported as check failures instead of blocking the installer.
+
+`Update` and `Update All Installed Packages` reuse Unity Package Manager installation through `Client.Add` with the selected channel URL.
+
+TODO: installer self-update is intentionally out of scope for this version.
 
 ## Integrations
 

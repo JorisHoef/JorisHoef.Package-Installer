@@ -14,12 +14,14 @@ namespace JorisHoef.PackageInstaller.Editor
 
         private PackageInstallService _packageInstallService;
         private PackageDetectionService _packageDetectionService;
+        private PackageUpdateCheckService _packageUpdateCheckService;
         private ScriptingDefineService _scriptingDefineService;
         private IntegrationInstaller _integrationInstaller;
         private readonly Dictionary<string, PackageChannel> _selectedChannels =
             new Dictionary<string, PackageChannel>();
 
         private Vector2 _scrollPosition;
+        private bool _checkUpdatesAfterDetectionRefresh;
 
         [MenuItem("Tools/JorisHoef/Package Installer")]
         public static void Open()
@@ -37,6 +39,7 @@ namespace JorisHoef.PackageInstaller.Editor
 
             _packageInstallService = new PackageInstallService();
             _packageDetectionService = new PackageDetectionService();
+            _packageUpdateCheckService = new PackageUpdateCheckService(_packageDetectionService);
             _scriptingDefineService = new ScriptingDefineService();
             _integrationInstaller = new IntegrationInstaller(
                 _packageInstallService,
@@ -44,7 +47,10 @@ namespace JorisHoef.PackageInstaller.Editor
                 _scriptingDefineService);
 
             _packageInstallService.StateChanged += Repaint;
+            _packageInstallService.QueueCompleted += HandlePackageInstallQueueCompleted;
             _packageDetectionService.StateChanged += Repaint;
+            _packageDetectionService.RefreshCompleted += HandlePackageDetectionRefreshCompleted;
+            _packageUpdateCheckService.StateChanged += Repaint;
 
             _packageDetectionService.Refresh();
         }
@@ -54,6 +60,7 @@ namespace JorisHoef.PackageInstaller.Editor
             if (_packageInstallService != null)
             {
                 _packageInstallService.StateChanged -= Repaint;
+                _packageInstallService.QueueCompleted -= HandlePackageInstallQueueCompleted;
                 _packageInstallService.Dispose();
             }
 
@@ -65,7 +72,14 @@ namespace JorisHoef.PackageInstaller.Editor
             if (_packageDetectionService != null)
             {
                 _packageDetectionService.StateChanged -= Repaint;
+                _packageDetectionService.RefreshCompleted -= HandlePackageDetectionRefreshCompleted;
                 _packageDetectionService.Dispose();
+            }
+
+            if (_packageUpdateCheckService != null)
+            {
+                _packageUpdateCheckService.StateChanged -= Repaint;
+                _packageUpdateCheckService.Dispose();
             }
         }
 
@@ -106,6 +120,18 @@ namespace JorisHoef.PackageInstaller.Editor
                     if (GUILayout.Button("Refresh", GUILayout.Width(90f)))
                     {
                         _packageDetectionService.Refresh();
+                        _packageUpdateCheckService.InvalidateAll();
+                    }
+                }
+
+                using (new EditorGUI.DisabledScope(
+                           _packageInstallService.IsBusy ||
+                           _packageDetectionService.IsRefreshing ||
+                           _packageUpdateCheckService.IsChecking))
+                {
+                    if (GUILayout.Button("Check for Updates", GUILayout.Width(130f)))
+                    {
+                        _packageUpdateCheckService.CheckForUpdates(PackageRegistry.StandalonePackages, GetSelectedChannel);
                     }
                 }
             }
@@ -125,6 +151,11 @@ namespace JorisHoef.PackageInstaller.Editor
                 _packageInstallService.CurrentPackage != null)
             {
                 EditorGUILayout.HelpBox("Installing " + _packageInstallService.CurrentPackage.DisplayName + "...", MessageType.Info);
+            }
+
+            if (_packageUpdateCheckService.IsChecking)
+            {
+                EditorGUILayout.HelpBox("Checking installed packages for updates...", MessageType.Info);
             }
         }
 
@@ -152,9 +183,25 @@ namespace JorisHoef.PackageInstaller.Editor
         private void DrawFooter()
         {
             EditorGUILayout.Space(8f);
+            DrawUpdateAllStatus();
 
             using (new EditorGUILayout.HorizontalScope(EditorStyles.toolbar))
             {
+                PackageDefinition[] packagesWithUpdates = GetPackagesWithUpdates();
+
+                using (new EditorGUI.DisabledScope(
+                           packagesWithUpdates.Length == 0 ||
+                           _packageInstallService.IsBusy ||
+                           _packageDetectionService.IsRefreshing ||
+                           _packageUpdateCheckService.IsChecking))
+                {
+                    if (GUILayout.Button("Update All Installed Packages", EditorStyles.toolbarButton, GUILayout.Width(190f)))
+                    {
+                        _packageInstallService.InstallMany(packagesWithUpdates, GetSelectedChannel);
+                        _packageUpdateCheckService.InvalidateAll();
+                    }
+                }
+
                 GUILayout.FlexibleSpace();
 
                 using (new EditorGUI.DisabledScope(_packageInstallService.IsBusy || _packageDetectionService.IsRefreshing))
@@ -184,6 +231,7 @@ namespace JorisHoef.PackageInstaller.Editor
                 DrawDisplayVersion(packageDefinition);
                 DrawSelectableValue("Package ID", packageDefinition.PackageId);
                 DrawSelectableValue("Reference", packageDefinition.GetUrl(GetSelectedChannel(packageDefinition)));
+                DrawPackageUpdateStatus(packageDefinition);
 
                 using (new EditorGUILayout.HorizontalScope())
                 {
@@ -191,6 +239,23 @@ namespace JorisHoef.PackageInstaller.Editor
 
                     bool installed = _packageDetectionService.IsInstalled(packageDefinition.PackageId);
                     bool queuedOrInstalling = _packageInstallService.IsQueuedOrInstalling(packageDefinition.PackageId);
+                    PackageUpdateStatus updateStatus = _packageUpdateCheckService.GetStatus(
+                        packageDefinition,
+                        GetSelectedChannel(packageDefinition));
+
+                    using (new EditorGUI.DisabledScope(
+                               !updateStatus.IsUpdateAvailable ||
+                               queuedOrInstalling ||
+                               _packageInstallService.IsBusy ||
+                               _packageDetectionService.IsRefreshing ||
+                               _packageUpdateCheckService.IsChecking))
+                    {
+                        if (GUILayout.Button("Update", GUILayout.Width(100f)))
+                        {
+                            _packageInstallService.Install(packageDefinition, GetSelectedChannel(packageDefinition));
+                            _packageUpdateCheckService.Invalidate(packageDefinition.PackageId);
+                        }
+                    }
 
                     using (new EditorGUI.DisabledScope(installed || queuedOrInstalling || _packageDetectionService.IsRefreshing))
                     {
@@ -257,6 +322,15 @@ namespace JorisHoef.PackageInstaller.Editor
             DrawStatusLabel("Not installed", MessageType.Warning);
         }
 
+        private void DrawPackageUpdateStatus(PackageDefinition packageDefinition)
+        {
+            PackageUpdateStatus status = _packageUpdateCheckService.GetStatus(
+                packageDefinition,
+                GetSelectedChannel(packageDefinition));
+
+            DrawSelectableValue("Update", GetUpdateStatusText(status));
+        }
+
         private void DrawIntegrationStatus(PackageDefinition packageDefinition)
         {
             if (_integrationInstaller.HasPendingIntegration(packageDefinition))
@@ -312,6 +386,7 @@ namespace JorisHoef.PackageInstaller.Editor
                 if (nextChannel != selectedChannel)
                 {
                     _selectedChannels[packageDefinition.PackageId] = nextChannel;
+                    _packageUpdateCheckService.Invalidate(packageDefinition.PackageId);
                 }
             }
         }
@@ -363,6 +438,83 @@ namespace JorisHoef.PackageInstaller.Editor
                     EditorStyles.textField,
                     GUILayout.Height(EditorGUIUtility.singleLineHeight));
             }
+        }
+
+        private void DrawUpdateAllStatus()
+        {
+            if (!_packageUpdateCheckService.HasStatuses)
+            {
+                return;
+            }
+
+            if (_packageUpdateCheckService.IsChecking)
+            {
+                EditorGUILayout.HelpBox("Checking installed packages for updates...", MessageType.Info);
+                return;
+            }
+
+            PackageDefinition[] packagesWithUpdates = GetPackagesWithUpdates();
+
+            if (packagesWithUpdates.Length == 0)
+            {
+                EditorGUILayout.HelpBox("No package updates available for installed packages.", MessageType.None);
+                return;
+            }
+
+            EditorGUILayout.HelpBox(
+                "Updates available: " + string.Join(", ", packagesWithUpdates.Select(package => package.DisplayName).ToArray()),
+                MessageType.Info);
+        }
+
+        private PackageDefinition[] GetPackagesWithUpdates()
+        {
+            return _packageUpdateCheckService
+                .GetPackagesWithUpdates(PackageRegistry.StandalonePackages, GetSelectedChannel)
+                .ToArray();
+        }
+
+        private static string GetUpdateStatusText(PackageUpdateStatus status)
+        {
+            if (status == null)
+            {
+                return "Check unknown";
+            }
+
+            if (status.Kind == PackageUpdateStatusKind.UpToDate && !string.IsNullOrWhiteSpace(status.ShortLatestRevision))
+            {
+                return status.Label + " (" + status.ShortLatestRevision + ")";
+            }
+
+            if (status.Kind == PackageUpdateStatusKind.UpdateAvailable)
+            {
+                return status.Label + " (" + status.ShortInstalledRevision + " -> " + status.ShortLatestRevision + ")";
+            }
+
+            if (status.Kind == PackageUpdateStatusKind.Failed && !string.IsNullOrWhiteSpace(status.Message))
+            {
+                return status.Label + ": " + status.Message;
+            }
+
+            return status.Label;
+        }
+
+        private void HandlePackageInstallQueueCompleted()
+        {
+            if (_packageUpdateCheckService.HasStatuses)
+            {
+                _checkUpdatesAfterDetectionRefresh = true;
+            }
+        }
+
+        private void HandlePackageDetectionRefreshCompleted()
+        {
+            if (!_checkUpdatesAfterDetectionRefresh)
+            {
+                return;
+            }
+
+            _checkUpdatesAfterDetectionRefresh = false;
+            _packageUpdateCheckService.CheckForUpdates(PackageRegistry.StandalonePackages, GetSelectedChannel);
         }
 
     }
