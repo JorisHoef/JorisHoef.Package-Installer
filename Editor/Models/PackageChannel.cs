@@ -1,4 +1,4 @@
-namespace JorisHoef.PackageInstaller.Editor
+namespace Deucarian.PackageInstaller.Editor
 {
     internal enum PackageChannel
     {

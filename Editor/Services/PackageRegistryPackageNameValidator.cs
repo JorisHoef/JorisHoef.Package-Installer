@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace JorisHoef.PackageInstaller.Editor
+namespace Deucarian.PackageInstaller.Editor
 {
     internal static class PackageRegistryPackageNameValidator
     {

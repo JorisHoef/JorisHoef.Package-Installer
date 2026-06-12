@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace JorisHoef.PackageInstaller.Editor
+namespace Deucarian.PackageInstaller.Editor
 {
     internal sealed class PackageDependencyInstaller
     {
-        private const string LogPrefix = "[JorisHoef Package Installer]";
+        private const string LogPrefix = "[Deucarian Package Installer]";
 
         private readonly PackageInstallService _packageInstallService;
         private readonly PackageDetectionService _packageDetectionService;

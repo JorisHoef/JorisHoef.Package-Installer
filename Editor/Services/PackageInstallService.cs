@@ -6,7 +6,7 @@ using UnityEditor.PackageManager;
 using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 
-namespace JorisHoef.PackageInstaller.Editor
+namespace Deucarian.PackageInstaller.Editor
 {
     internal enum PackageInstallRequestState
     {
@@ -45,9 +45,9 @@ namespace JorisHoef.PackageInstaller.Editor
 
     internal sealed class PackageInstallService : IDisposable
     {
-        private const string LogPrefix = "[JorisHoef Package Installer]";
-        private const string PendingOperationNameKey = "JorisHoef.PackageInstaller.PendingOperationName";
-        private const string PendingQueueKey = "JorisHoef.PackageInstaller.PendingQueue";
+        private const string LogPrefix = "[Deucarian Package Installer]";
+        private const string PendingOperationNameKey = "Deucarian.PackageInstaller.PendingOperationName";
+        private const string PendingQueueKey = "Deucarian.PackageInstaller.PendingQueue";
 
         private readonly Queue<QueuedPackageInstall> _installQueue = new Queue<QueuedPackageInstall>();
         private readonly HashSet<string> _queuedOrInstallingPackageIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);

@@ -1,11 +1,11 @@
 {
-  "name": "com.jorishoef.package-installer",
+  "name": "com.deucarian.package-installer",
   "version": "1.0.0",
-  "displayName": "JorisHoef Package Installer",
-  "description": "Editor-only installer window for installing and composing JorisHoef Unity UPM packages.",
+  "displayName": "Deucarian Package Installer",
+  "description": "Editor-only installer window for installing and composing Deucarian Unity UPM packages.",
   "unity": "2021.3",
   "author": {
-    "name": "JorisHoef"
+    "name": "Deucarian"
   },
   "keywords": [
     "upm",

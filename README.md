@@ -1,18 +1,18 @@
-# JorisHoef Package Installer
+# Deucarian Package Installer
 
 ## Overview
 
-JorisHoef Package Installer is a small editor-only Unity Package Manager package that adds a custom installer window for JorisHoef packages.
+Deucarian Package Installer is a small editor-only Unity Package Manager package that adds a custom installer window for Deucarian packages.
 
 Open it from:
 
 ```text
-Tools > JorisHoef > Package Installer
+Tools > Deucarian > Package Installer
 ```
 
 The installer can install standalone packages, bridge packages, and explicitly declared package samples without making this package a runtime dependency of any other package.
 
-Package ID: `com.jorishoef.package-installer`
+Package ID: `com.deucarian.package-installer`
 
 ## Installation
 
@@ -21,7 +21,7 @@ Add the installer through Unity Package Manager with a Git URL:
 ```json
 {
   "dependencies": {
-    "com.jorishoef.package-installer": "https://github.com/JorisHoef/JorisHoef.Package-Installer.git#main"
+    "com.deucarian.package-installer": "https://github.com/Deucarian/Package-Installer.git#main"
   }
 }
 ```
@@ -29,7 +29,7 @@ Add the installer through Unity Package Manager with a Git URL:
 For development builds, use:
 
 ```json
-"com.jorishoef.package-installer": "https://github.com/JorisHoef/JorisHoef.Package-Installer.git#develop"
+"com.deucarian.package-installer": "https://github.com/Deucarian/Package-Installer.git#develop"
 ```
 
 You can also use Unity's Package Manager window:
@@ -37,7 +37,7 @@ You can also use Unity's Package Manager window:
 1. Open `Window > Package Manager`.
 2. Select `+ > Add package from git URL...`.
 3. Enter the installer Git URL.
-4. Open `Tools > JorisHoef > Package Installer`.
+4. Open `Tools > Deucarian > Package Installer`.
 
 The package requires Unity `2021.3` or newer and has no package dependencies.
 
@@ -47,7 +47,7 @@ Package entries are loaded from a registry instead of being hardcoded in the ins
 
 The installer loads the bundled `PackageRegistry.json` first so it works offline, then tries to refresh from:
 
-`https://raw.githubusercontent.com/JorisHoef/Package-Registry/main/packages.json`
+`https://raw.githubusercontent.com/Deucarian/Package-Registry/main/packages.json`
 
 If the remote registry succeeds and validates, the window uses it. If it fails, the bundled registry stays active and the header shows that the remote registry failed.
 
@@ -55,29 +55,29 @@ Remote registry validation also checks each package entry against the target pac
 
 The current registry includes these package entries:
 
-- Core: Core State, API Helper, Object Loading, Session Helper
-- UI: Generic UI Items
+- Core: Core State, API, Object Loading, Session
+- UI: UI Binding
 - World: Object Selection
-- Bridge: Generic UI Items + Core State Bridge, Object Loading API Helper Bridge, ObjectSelection + CoreState Bridge, Session Helper + API Helper Bridge
+- Bridge: UI Binding + Core State Bridge, Object Loading API Bridge, ObjectSelection + CoreState Bridge, Session + API Bridge
 - Suites: Selection Suite
 
 Registered packages are first-class UPM packages with their own package IDs:
 
-- `com.jorishoef.core.state`
-- `com.jorishoef.api-helper`
-- `com.jorishoef.object-loading`
-- `com.jorishoef.session-helper`
-- `com.jorishoef.generic-ui-items`
-- `com.jorishoef.object-selection`
-- `com.jorishoef.generic-ui-items.core-state-bridge`
-- `com.jorishoef.object-loading.api-helper-bridge`
-- `com.jorishoef.objectselection-corestate-bridge`
-- `com.jorishoef.session-helper.api-helper-bridge`
-- `com.jorishoef.selection-suite`
+- `com.deucarian.core-state`
+- `com.deucarian.api`
+- `com.deucarian.object-loading`
+- `com.deucarian.session`
+- `com.deucarian.ui-binding`
+- `com.deucarian.object-selection`
+- `com.deucarian.ui-binding.core-state-bridge`
+- `com.deucarian.object-loading.api-bridge`
+- `com.deucarian.object-selection.core-state-bridge`
+- `com.deucarian.session.api-bridge`
+- `com.deucarian.selection-suite`
 
 `Install All` installs all missing registered packages in dependency order. Installing one bridge package automatically installs its missing dependencies first, then installs the bridge.
 
-Package IDs remain branded as `com.jorishoef.*`. Display names are supplied by the registry and used by the installer UI.
+Package IDs remain branded as `com.deucarian.*`. Display names are supplied by the registry and used by the installer UI.
 Technical details such as package IDs, selected references, installed references, revisions, and raw update messages are available from each row's Advanced foldout.
 
 ## Adding Package Definitions
@@ -86,12 +86,12 @@ Package entries are data-driven through registry JSON.
 
 To add or change packages, update the remote registry repository and keep the bundled fallback in sync:
 
-- Remote: `https://github.com/JorisHoef/Package-Registry`
+- Remote: `https://github.com/Deucarian/Package-Registry`
 - Bundled fallback: `PackageRegistry.json`
 
 The registry schema uses `schemaVersion` 1 and contains:
 
-- `id`: the Unity package name, such as `com.jorishoef.api-helper`. This must exactly match the target package's `package.json` `name` value.
+- `id`: the Unity package name, such as `com.deucarian.api`. This must exactly match the target package's `package.json` `name` value.
 - `displayName`: the name shown in the installer window.
 - `category`: grouping shown in the sidebar. Core, UI, World, Bridge, and Suites are ordered first; unknown categories are shown alphabetically after them.
 - `description`: explanatory text shown in the detail pane.
@@ -137,10 +137,10 @@ Bridge packages keep the core packages standalone while providing explicit compo
 
 Current bridge package dependencies:
 
-- GenericUIItems CoreState Bridge depends on Generic UI Items and Core State.
-- Object Loading API Helper Bridge depends on Object Loading and API Helper.
+- UIBinding CoreState Bridge depends on UI Binding and Core State.
+- Object Loading API Bridge depends on Object Loading and API.
 - ObjectSelection CoreState Bridge depends on Object Selection and Core State.
-- SessionHelper APIHelper Bridge depends on Session Helper and API Helper.
+- Session API Bridge depends on Session and API.
 
 Installing a bridge only requires one click. The installer computes the dependency-first install plan from `PackageDefinition.Dependencies` and sends that ordered package list to Unity Package Manager.
 
@@ -155,7 +155,7 @@ This package is editor-only and exposes no runtime API for game code.
 The user-facing entry point is the Unity menu item:
 
 ```text
-Tools/JorisHoef/Package Installer
+Tools/Deucarian/Package Installer
 ```
 
 The implementation is split into internal editor classes:
@@ -175,7 +175,7 @@ This package exists only to help developers install and compose packages inside 
 
 Keeping the installer editor-only ensures:
 
-- Core State, Generic UI Items, API Helper, Object Loading, and Session Helper remain standalone.
+- Core State, UI Binding, API, Object Loading, and Session remain standalone.
 - Projects do not ship installer code in builds.
 - No package gains a runtime dependency on this installer.
 

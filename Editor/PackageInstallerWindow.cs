@@ -5,7 +5,7 @@ using UnityEditor;
 using UnityEngine;
 using PackageManagerPackageInfo = UnityEditor.PackageManager.PackageInfo;
 
-namespace JorisHoef.PackageInstaller.Editor
+namespace Deucarian.PackageInstaller.Editor
 {
     internal sealed class PackageInstallerWindow : EditorWindow
     {
@@ -16,7 +16,7 @@ namespace JorisHoef.PackageInstaller.Editor
         private const float SidebarRowHeight = 52f;
         private const float ProgressAreaHeight = 96f;
         private const float SummaryAreaHeight = 106f;
-        private const string ChannelPreferencePrefix = "JorisHoef.PackageInstaller.SelectedChannel.";
+        private const string ChannelPreferencePrefix = "Deucarian.PackageInstaller.SelectedChannel.";
 
         private enum SelectionKind
         {
@@ -129,7 +129,7 @@ namespace JorisHoef.PackageInstaller.Editor
         private GUIStyle _primaryButtonStyle;
         private GUIStyle _secondaryButtonStyle;
 
-        [MenuItem("Tools/JorisHoef/Package Installer")]
+        [MenuItem("Tools/Deucarian/Package Installer")]
         public static void Open()
         {
             PackageInstallerWindow window = GetWindow<PackageInstallerWindow>();
@@ -366,9 +366,9 @@ namespace JorisHoef.PackageInstaller.Editor
             {
                 using (new EditorGUILayout.VerticalScope(GUILayout.MinWidth(280f), GUILayout.ExpandWidth(true)))
                 {
-                    EditorGUILayout.LabelField("JorisHoef Package Installer", _titleStyle);
+                    EditorGUILayout.LabelField("Deucarian Package Installer", _titleStyle);
                     EditorGUILayout.LabelField(
-                        "Install, update, remove, and compose JorisHoef packages through first-class bridge packages.",
+                        "Install, update, remove, and compose Deucarian packages through first-class bridge packages.",
                         _subtitleStyle);
                 }
 
@@ -607,8 +607,8 @@ namespace JorisHoef.PackageInstaller.Editor
             }
 
             return packageDefinition.DisplayName
-                .Replace("Generic UI Items + Core State", "Generic UI Items + Core State")
-                .Replace("Session Helper + API Helper", "Session Helper + API Helper");
+                .Replace("UI Binding + Core State", "UI Binding + Core State")
+                .Replace("Session + API", "Session + API");
         }
 
         private string GetChannelSummary(PackageDefinition packageDefinition)

@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 using UnityEditor.PackageManager;
 using UnityEngine;
 
-namespace JorisHoef.PackageInstaller.Editor
+namespace Deucarian.PackageInstaller.Editor
 {
     internal sealed class PackageRegistryLoader
     {
         public const string RemoteRegistryUrl =
-            "https://raw.githubusercontent.com/JorisHoef/Package-Registry/main/packages.json";
+            "https://raw.githubusercontent.com/Deucarian/Package-Registry/main/packages.json";
         public const string BundledRegistryFileName = "PackageRegistry.json";
 
         private readonly Func<string, Task<string>> _remoteFetcher;
@@ -107,7 +107,7 @@ namespace JorisHoef.PackageInstaller.Editor
             {
                 using (WebClient webClient = new WebClient())
                 {
-                    webClient.Headers[HttpRequestHeader.UserAgent] = "JorisHoef-Package-Installer";
+                    webClient.Headers[HttpRequestHeader.UserAgent] = "Deucarian-Package-Installer";
                     return webClient.DownloadString(url);
                 }
             });

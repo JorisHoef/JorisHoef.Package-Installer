@@ -1,6 +1,6 @@
 using System;
 
-namespace JorisHoef.PackageInstaller.Editor
+namespace Deucarian.PackageInstaller.Editor
 {
     [Serializable]
     internal sealed class PackageRegistryEntry

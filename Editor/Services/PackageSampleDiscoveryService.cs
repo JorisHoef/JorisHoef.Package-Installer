@@ -4,11 +4,11 @@ using System.IO;
 using UnityEngine;
 using PackageManagerPackageInfo = UnityEditor.PackageManager.PackageInfo;
 
-namespace JorisHoef.PackageInstaller.Editor
+namespace Deucarian.PackageInstaller.Editor
 {
     internal sealed class PackageSampleDiscoveryService
     {
-        private const string LogPrefix = "[JorisHoef Package Installer]";
+        private const string LogPrefix = "[Deucarian Package Installer]";
 
         private static readonly IReadOnlyList<PackageExtraDefinition> EmptySamples =
             Array.Empty<PackageExtraDefinition>();

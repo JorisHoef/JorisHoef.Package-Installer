@@ -10,11 +10,11 @@ using UnityEditor;
 using UnityEngine;
 using PackageManagerPackageInfo = UnityEditor.PackageManager.PackageInfo;
 
-namespace JorisHoef.PackageInstaller.Editor
+namespace Deucarian.PackageInstaller.Editor
 {
     internal sealed class PackageUpdateCheckService : IDisposable
     {
-        private const string LogPrefix = "[JorisHoef Package Installer]";
+        private const string LogPrefix = "[Deucarian Package Installer]";
         private const int GitTimeoutMilliseconds = 15000;
 
         private static readonly Regex ShaRegex =

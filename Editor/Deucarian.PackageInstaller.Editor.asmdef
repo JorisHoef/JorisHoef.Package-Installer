@@ -1,6 +1,6 @@
 {
-  "name": "JorisHoef.PackageInstaller.Editor",
-  "rootNamespace": "JorisHoef.PackageInstaller.Editor",
+  "name": "Deucarian.PackageInstaller.Editor",
+  "rootNamespace": "Deucarian.PackageInstaller.Editor",
   "references": [],
   "includePlatforms": [
     "Editor"

@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 
-namespace JorisHoef.PackageInstaller.Editor
+namespace Deucarian.PackageInstaller.Editor
 {
     internal static class PackageRegistryProvider
     {
-        private const string LogPrefix = "[JorisHoef Package Installer]";
+        private const string LogPrefix = "[Deucarian Package Installer]";
 
         private static readonly PackageRegistryLoader Loader = new PackageRegistryLoader();
         private static readonly IReadOnlyList<PackageDefinition> EmptyPackages =

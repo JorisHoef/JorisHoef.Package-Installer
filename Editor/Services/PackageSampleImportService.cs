@@ -8,7 +8,7 @@ using UnityEditor;
 using UnityEngine;
 using PackageManagerPackageInfo = UnityEditor.PackageManager.PackageInfo;
 
-namespace JorisHoef.PackageInstaller.Editor
+namespace Deucarian.PackageInstaller.Editor
 {
     internal enum PackageSampleImportState
     {
@@ -34,7 +34,7 @@ namespace JorisHoef.PackageInstaller.Editor
 
     internal sealed class PackageSampleImportService
     {
-        private const string LogPrefix = "[JorisHoef Package Installer]";
+        private const string LogPrefix = "[Deucarian Package Installer]";
 
         private readonly Dictionary<string, PackageSampleImportStatus> _statuses =
             new Dictionary<string, PackageSampleImportStatus>(StringComparer.OrdinalIgnoreCase);

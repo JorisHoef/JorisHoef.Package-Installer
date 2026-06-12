@@ -1,8 +1,8 @@
 {
-  "name": "JorisHoef.PackageInstaller.Editor.Tests",
-  "rootNamespace": "JorisHoef.PackageInstaller.Editor.Tests",
+  "name": "Deucarian.PackageInstaller.Editor.Tests",
+  "rootNamespace": "Deucarian.PackageInstaller.Editor.Tests",
   "references": [
-    "JorisHoef.PackageInstaller.Editor"
+    "Deucarian.PackageInstaller.Editor"
   ],
   "includePlatforms": [
     "Editor"

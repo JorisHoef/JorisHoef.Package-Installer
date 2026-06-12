@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace JorisHoef.PackageInstaller.Editor
+namespace Deucarian.PackageInstaller.Editor
 {
     internal static class PackageRegistryValidator
     {

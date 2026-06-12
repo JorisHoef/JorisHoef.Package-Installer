@@ -1,3 +1,3 @@
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("JorisHoef.PackageInstaller.Editor.Tests")]
+[assembly: InternalsVisibleTo("Deucarian.PackageInstaller.Editor.Tests")]

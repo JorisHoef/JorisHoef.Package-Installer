@@ -1,122 +1,131 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-06-08",
+  "updatedAt": "2026-06-12",
   "packages": [
     {
-      "id": "com.jorishoef.core.state",
-      "displayName": "JorisHoef Core State",
+      "id": "com.deucarian.core-state",
+      "displayName": "Deucarian Core State",
       "category": "Core",
       "description": "Generic repository and selection state services for Unity.",
-      "stableUrl": "https://github.com/JorisHoef/Core-State.git#main",
-      "developmentUrl": "https://github.com/JorisHoef/Core-State.git#develop",
+      "stableUrl": "https://github.com/Deucarian/Core-State.git#main",
+      "developmentUrl": "https://github.com/Deucarian/Core-State.git#develop",
       "dependencies": []
     },
     {
-      "id": "com.jorishoef.api-helper",
-      "displayName": "JorisHoef API Helper",
+      "id": "com.deucarian.api",
+      "displayName": "Deucarian API",
       "category": "Core",
-      "description": "Reusable API client helpers for Unity.",
-      "stableUrl": "https://github.com/JorisHoef/API-Helper.git#main",
-      "developmentUrl": "https://github.com/JorisHoef/API-Helper.git#develop",
+      "description": "Reusable API client for Unity.",
+      "stableUrl": "https://github.com/Deucarian/API.git#main",
+      "developmentUrl": "https://github.com/Deucarian/API.git#develop",
       "dependencies": []
     },
     {
-      "id": "com.jorishoef.object-loading",
-      "displayName": "JorisHoef Object Loading",
+      "id": "com.deucarian.object-loading",
+      "displayName": "Deucarian Object Loading",
       "category": "Core",
       "description": "Reusable runtime loading pipeline for resolved object and scene content sources.",
-      "stableUrl": "https://github.com/JorisHoef/Object-Loading.git#main",
-      "developmentUrl": "https://github.com/JorisHoef/Object-Loading.git#develop",
+      "stableUrl": "https://github.com/Deucarian/Object-Loading.git#main",
+      "developmentUrl": "https://github.com/Deucarian/Object-Loading.git#develop",
       "dependencies": []
     },
     {
-      "id": "com.jorishoef.session-helper",
-      "displayName": "JorisHoef Session Helper",
+      "id": "com.deucarian.session",
+      "displayName": "Deucarian Session",
       "category": "Core",
-      "description": "Reusable session management helpers for Unity.",
-      "stableUrl": "https://github.com/JorisHoef/Session-Helper.git#main",
-      "developmentUrl": "https://github.com/JorisHoef/Session-Helper.git#develop",
+      "description": "Reusable session management for Unity.",
+      "stableUrl": "https://github.com/Deucarian/Session.git#main",
+      "developmentUrl": "https://github.com/Deucarian/Session.git#develop",
       "dependencies": []
     },
     {
-      "id": "com.jorishoef.generic-ui-items",
-      "displayName": "JorisHoef Generic UI Items",
+      "id": "com.deucarian.ui-binding",
+      "displayName": "Deucarian UI Binding",
       "category": "UI",
-      "description": "Generic data-driven UI item container helpers for Unity.",
-      "stableUrl": "https://github.com/JorisHoef/GenericUIItems.git#main",
-      "developmentUrl": "https://github.com/JorisHoef/GenericUIItems.git#develop",
+      "description": "Data-driven UI Binding containers for Unity.",
+      "stableUrl": "https://github.com/Deucarian/UI-Binding.git#main",
+      "developmentUrl": "https://github.com/Deucarian/UI-Binding.git#develop",
       "dependencies": []
     },
     {
-      "id": "com.jorishoef.object-selection",
-      "displayName": "JorisHoef Object Selection",
+      "id": "com.deucarian.object-selection",
+      "displayName": "Deucarian Object Selection",
       "category": "World",
       "description": "Keyed world-object selection, raycast input adapters, hover tracking, and highlight hooks for Unity.",
-      "stableUrl": "https://github.com/JorisHoef/Object-Selection.git#main",
+      "stableUrl": "https://github.com/Deucarian/Object-Selection.git#main",
       "developmentUrl": "",
       "dependencies": []
     },
     {
-      "id": "com.jorishoef.session-helper.api-helper-bridge",
-      "displayName": "Session Helper + API Helper Bridge",
+      "id": "com.deucarian.package-installer",
+      "displayName": "Deucarian Package Installer",
+      "category": "Tools",
+      "description": "Editor installer window for installing and composing Deucarian Unity UPM packages.",
+      "stableUrl": "https://github.com/Deucarian/Package-Installer.git#main",
+      "developmentUrl": "https://github.com/Deucarian/Package-Installer.git#develop",
+      "dependencies": []
+    },
+    {
+      "id": "com.deucarian.session.api-bridge",
+      "displayName": "Deucarian Session API Bridge",
       "category": "Bridge",
-      "description": "Integration package connecting Session Helper authentication to API Helper.",
-      "stableUrl": "https://github.com/JorisHoef/SessionHelper-APIHelper-Bridge.git#main",
-      "developmentUrl": "https://github.com/JorisHoef/SessionHelper-APIHelper-Bridge.git#develop",
+      "description": "Integration package connecting Session authentication to API.",
+      "stableUrl": "https://github.com/Deucarian/Session-API-Bridge.git#main",
+      "developmentUrl": "",
       "dependencies": [
-        "com.jorishoef.session-helper",
-        "com.jorishoef.api-helper"
+        "com.deucarian.session",
+        "com.deucarian.api"
       ]
     },
     {
-      "id": "com.jorishoef.object-loading.api-helper-bridge",
-      "displayName": "JorisHoef Object Loading API Helper Bridge",
+      "id": "com.deucarian.object-loading.api-bridge",
+      "displayName": "Deucarian Object Loading API Bridge",
       "category": "Bridge",
-      "description": "Optional integration package that lets Object Loading downloads go through API Helper.",
-      "stableUrl": "https://github.com/JorisHoef/Object-Loading-APIHelper-Bridge.git#main",
-      "developmentUrl": "https://github.com/JorisHoef/Object-Loading-APIHelper-Bridge.git#develop",
+      "description": "Optional integration package that lets Object Loading downloads go through API.",
+      "stableUrl": "https://github.com/Deucarian/Object-Loading-API-Bridge.git#main",
+      "developmentUrl": "https://github.com/Deucarian/Object-Loading-API-Bridge.git#develop",
       "dependencies": [
-        "com.jorishoef.object-loading",
-        "com.jorishoef.api-helper"
+        "com.deucarian.object-loading",
+        "com.deucarian.api"
       ]
     },
     {
-      "id": "com.jorishoef.generic-ui-items.core-state-bridge",
-      "displayName": "Generic UI Items + Core State Bridge",
+      "id": "com.deucarian.ui-binding.core-state-bridge",
+      "displayName": "Deucarian UI Binding Core State Bridge",
       "category": "Bridge",
-      "description": "Integration package connecting Generic UI Items containers to Core State repositories and selection services.",
-      "stableUrl": "https://github.com/JorisHoef/GenericUIItems-CoreState-Bridge.git#main",
-      "developmentUrl": "https://github.com/JorisHoef/GenericUIItems-CoreState-Bridge.git#develop",
+      "description": "Integration package connecting UI Binding containers to Core State repositories and selection services.",
+      "stableUrl": "https://github.com/Deucarian/UI-Binding-CoreState-Bridge.git#main",
+      "developmentUrl": "https://github.com/Deucarian/UI-Binding-CoreState-Bridge.git#develop",
       "dependencies": [
-        "com.jorishoef.generic-ui-items",
-        "com.jorishoef.core.state"
+        "com.deucarian.ui-binding",
+        "com.deucarian.core-state"
       ]
     },
     {
-      "id": "com.jorishoef.objectselection-corestate-bridge",
-      "displayName": "ObjectSelection + CoreState Bridge",
+      "id": "com.deucarian.object-selection.core-state-bridge",
+      "displayName": "Deucarian Object Selection Core State Bridge",
       "category": "Bridge",
       "description": "Integration package synchronizing Object Selection and Core State selections through shared keys.",
-      "stableUrl": "https://github.com/JorisHoef/Object-Selection-Bridge.git#main",
+      "stableUrl": "https://github.com/Deucarian/Object-Selection-Bridge.git#main",
       "developmentUrl": "",
       "dependencies": [
-        "com.jorishoef.object-selection",
-        "com.jorishoef.core.state"
+        "com.deucarian.object-selection",
+        "com.deucarian.core-state"
       ]
     },
     {
-      "id": "com.jorishoef.selection-suite",
-      "displayName": "Selection Suite",
+      "id": "com.deucarian.selection-suite",
+      "displayName": "Deucarian Selection Suite",
       "category": "Suites",
-      "description": "Curated bundle that installs Core State, Generic UI Items, Object Selection, and both Core State selection bridges.",
-      "stableUrl": "https://github.com/JorisHoef/Selection-Suite.git#main",
+      "description": "Curated bundle that installs Core State, UI Binding, Object Selection, and both Core State selection bridges.",
+      "stableUrl": "https://github.com/Deucarian/Selection-Suite.git#main",
       "developmentUrl": "",
       "dependencies": [
-        "com.jorishoef.core.state",
-        "com.jorishoef.generic-ui-items",
-        "com.jorishoef.object-selection",
-        "com.jorishoef.generic-ui-items.core-state-bridge",
-        "com.jorishoef.objectselection-corestate-bridge"
+        "com.deucarian.core-state",
+        "com.deucarian.ui-binding",
+        "com.deucarian.object-selection",
+        "com.deucarian.ui-binding.core-state-bridge",
+        "com.deucarian.object-selection.core-state-bridge"
       ]
     }
   ]
